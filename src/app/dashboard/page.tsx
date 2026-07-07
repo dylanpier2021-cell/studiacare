@@ -6,6 +6,8 @@ import { useApp } from "@/lib/store";
 import { planForDay } from "@/data/studyPlan";
 import { CYCLE_DAYS } from "@/lib/config";
 import { chapterTitle } from "@/data/chapters";
+import { IconFlame, IconLayers, IconSliders, IconCards, IconLibrary, IconArrow } from "@/components/Icons";
+import type { ComponentType, SVGProps } from "react";
 
 export default function DashboardPage() {
   return (
@@ -38,7 +40,10 @@ function Dashboard() {
         </div>
         <div className="flex gap-3">
           <div className="card px-5 py-3 text-center">
-            <b className="block text-2xl text-brand">{progress.streak} 🔥</b>
+            <b className="flex items-center justify-center gap-1.5 text-2xl text-brand">
+              <IconFlame className="w-5 h-5" />
+              {progress.streak}
+            </b>
             <span className="text-xs text-ink-faint">day streak</span>
           </div>
           <div className="card px-5 py-3 text-center">
@@ -51,23 +56,26 @@ function Dashboard() {
       </div>
 
       {/* Today's plan */}
-      <div className="card p-6 sm:p-8 bg-brand border-none text-white">
-        <span className="pill !bg-white/20 !text-white">
-          Today · Day {progress.cycleDay} of your 7-day cycle
-        </span>
-        <h2 className="text-2xl font-extrabold mt-3">{today.focus}</h2>
-        <p className="text-white/85 mt-1 max-w-xl">{today.detail}</p>
-        <Link href={today.href} className="btn bg-white text-brand-dark mt-5">
-          {today.cta} →
-        </Link>
+      <div className="relative overflow-hidden rounded-card p-6 sm:p-8 text-white bg-gradient-to-br from-brand to-[color:var(--brand2)] ring-glow">
+        <div className="orb orb-c w-52 h-52 -top-10 -right-6 !opacity-25" />
+        <div className="relative">
+          <span className="pill !bg-white/20 !text-white">
+            Today · Day {progress.cycleDay} of your 7-day cycle
+          </span>
+          <h2 className="text-2xl font-extrabold mt-3">{today.focus}</h2>
+          <p className="text-white/85 mt-1 max-w-xl">{today.detail}</p>
+          <Link href={today.href} className="btn bg-white text-brand-dark mt-5 hover:!shadow-none">
+            {today.cta} <IconArrow className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
 
       {/* Quick actions */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
-        <QuickCard href="/quiz?bank=1" icon="💯" title="100-question quiz" body="Full timed conditioning bank." />
-        <QuickCard href="/quiz/setup" icon="🗂️" title="Custom quiz" body="Pick chapters and weak areas." />
-        <QuickCard href="/flashcards" icon="🔖" title="Flashcards" body="Drill by chapter." />
-        <QuickCard href="/chapters" icon="📚" title="Chapters" body="Read, watch, and quiz." />
+        <QuickCard href="/quiz?bank=1" Icon={IconLayers} title="100-question quiz" body="Full timed conditioning bank." />
+        <QuickCard href="/quiz/setup" Icon={IconSliders} title="Custom quiz" body="Pick chapters and weak areas." />
+        <QuickCard href="/flashcards" Icon={IconCards} title="Flashcards" body="Drill by chapter." />
+        <QuickCard href="/chapters" Icon={IconLibrary} title="Chapters" body="Read, watch, and quiz." />
       </div>
 
       {/* Snapshot */}
@@ -115,18 +123,20 @@ function Dashboard() {
 
 function QuickCard({
   href,
-  icon,
+  Icon,
   title,
   body,
 }: {
   href: string;
-  icon: string;
+  Icon: ComponentType<SVGProps<SVGSVGElement>>;
   title: string;
   body: string;
 }) {
   return (
-    <Link href={href} className="card p-5 hover:border-brand transition-colors">
-      <div className="text-2xl mb-2">{icon}</div>
+    <Link href={href} className="card glow-hover p-5">
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-3 bg-gradient-to-br from-brand to-[color:var(--brand2)]">
+        <Icon className="w-5 h-5" />
+      </div>
       <h3 className="font-bold text-sm">{title}</h3>
       <p className="text-xs text-ink-soft mt-1">{body}</p>
     </Link>

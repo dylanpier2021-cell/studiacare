@@ -7,6 +7,7 @@ import { useApp } from "@/lib/store";
 import { CHAPTERS } from "@/data/chapters";
 import { PLANS } from "@/lib/config";
 import type { ReminderSettings } from "@/lib/types";
+import { IconFlame, IconCheck } from "@/components/Icons";
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -38,7 +39,7 @@ function Profile() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <Stat value={String(progress.questionsAnswered)} label="questions" />
         <Stat value={progress.attempts.length ? `${avg}%` : "—"} label="avg score" />
-        <Stat value={`${progress.streak} 🔥`} label="streak" />
+        <Stat value={String(progress.streak)} label="day streak" icon={<IconFlame className="w-4 h-4" />} />
         <Stat value={`${progress.cycleNumber}`} label="cycle #" />
       </div>
 
@@ -171,16 +172,33 @@ function ReminderCard() {
       </div>
 
       <button onClick={save} className="btn btn-primary btn-sm mt-5">
-        {saved ? "Saved ✓" : "Save reminders"}
+        {saved ? (
+          <>
+            <IconCheck className="w-4 h-4" /> Saved
+          </>
+        ) : (
+          "Save reminders"
+        )}
       </button>
     </div>
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({
+  value,
+  label,
+  icon,
+}: {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+}) {
   return (
     <div className="card p-4 text-center">
-      <b className="block text-xl text-brand">{value}</b>
+      <b className="flex items-center justify-center gap-1 text-xl text-brand">
+        {icon}
+        {value}
+      </b>
       <span className="text-xs text-ink-faint">{label}</span>
     </div>
   );

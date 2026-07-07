@@ -8,6 +8,7 @@ import { useApp } from "@/lib/store";
 import { CHAPTERS } from "@/data/chapters";
 import { questionsForChapters } from "@/data/questions";
 import { hasAdvanced } from "@/lib/config";
+import { IconLayers, IconClock } from "@/components/Icons";
 
 export default function QuizSetupPage() {
   return (
@@ -55,16 +56,17 @@ function QuizSetup() {
 
       {/* Quick launchers */}
       <div className="grid gap-3 sm:grid-cols-2 mb-8">
-        <Link href="/quiz?bank=1" className="card p-5 hover:border-brand transition-colors">
-          <div className="text-xl mb-1">💯</div>
+        <Link href="/quiz?bank=1" className="card glow-hover p-5">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-2 bg-gradient-to-br from-brand to-[color:var(--brand2)]">
+            <IconLayers className="w-5 h-5" />
+          </div>
           <h3 className="font-bold text-sm">Full conditioning quiz</h3>
           <p className="text-xs text-ink-soft mt-1">Every chapter, timed. Build your stamina.</p>
         </Link>
-        <Link
-          href="/quiz?mode=mock&bank=1"
-          className="card p-5 hover:border-brand transition-colors relative"
-        >
-          <div className="text-xl mb-1">📝</div>
+        <Link href="/quiz?mode=mock&bank=1" className="card glow-hover p-5 relative">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-2 bg-gradient-to-br from-brand to-[color:var(--brand2)]">
+            <IconClock className="w-5 h-5" />
+          </div>
           <h3 className="font-bold text-sm">
             Mock exam {user && !hasAdvanced(user.tier) && <span className="pill ml-1">Advanced</span>}
           </h3>

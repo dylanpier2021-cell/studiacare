@@ -7,6 +7,7 @@ import { PASSAGES } from "@/data/passages";
 import { RichText } from "./Define";
 import { Flashcards } from "./Flashcards";
 import { ReadingTrainer } from "./ReadingTrainer";
+import { IconClock } from "./Icons";
 
 const TABS = ["Practice", "Flashcards", "Reading Trainer"] as const;
 type Tab = (typeof TABS)[number];
@@ -101,7 +102,9 @@ function DemoQuiz() {
         <span className="text-sm font-semibold text-ink-soft">
           Question {i + 1} of {DEMO_Q.length}
         </span>
-        <span className="tabular font-bold bg-soft px-3 py-1.5 rounded-full text-sm">⏱ 05:00</span>
+        <span className="tabular font-bold bg-soft px-3 py-1.5 rounded-full text-sm inline-flex items-center gap-1.5">
+          <IconClock className="w-4 h-4" /> 05:00
+        </span>
       </div>
       <p className="text-lg font-bold mb-4 leading-snug">
         <RichText text={q.prompt} />

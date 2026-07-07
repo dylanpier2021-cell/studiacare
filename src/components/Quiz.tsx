@@ -7,6 +7,7 @@ import { useApp } from "@/lib/store";
 import { chapterTitle } from "@/data/chapters";
 import { RichText } from "./Define";
 import { Paywall } from "./Paywall";
+import { IconClock, IconCheck } from "./Icons";
 
 function fmt(s: number) {
   const m = Math.max(0, s);
@@ -125,12 +126,12 @@ export function Quiz({ questions, seconds, label, chapter, backHref = "/dashboar
           <span className="pill">{label}</span>
         </div>
         <span
-          className={`tabular font-extrabold px-4 py-2 rounded-full bg-soft ${
+          className={`tabular font-extrabold px-4 py-2 rounded-full bg-soft inline-flex items-center gap-1.5 ${
             low ? "text-bad" : ""
           }`}
           aria-live="polite"
         >
-          ⏱ {fmt(timeLeft)}
+          <IconClock className="w-4 h-4" /> {fmt(timeLeft)}
         </span>
       </div>
 
@@ -270,8 +271,15 @@ function Results({
               a.correct ? "border-l-4 border-l-good" : "border-l-4 border-l-bad"
             }`}
           >
-            <p className="font-semibold mb-1">
-              Q{n + 1} — {a.correct ? "✓ Correct" : "✗ Missed"}
+            <p className="font-semibold mb-1 inline-flex items-center gap-1.5">
+              Q{n + 1} —{" "}
+              {a.correct ? (
+                <span className="inline-flex items-center gap-1 text-good">
+                  <IconCheck className="w-4 h-4" /> Correct
+                </span>
+              ) : (
+                <span className="text-bad">Missed</span>
+              )}
             </p>
             <p className="text-ink-soft">
               <RichText text={a.q.rationale} />

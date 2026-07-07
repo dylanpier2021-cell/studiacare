@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IconMoon, IconSun } from "./Icons";
 
 /** Light/dark toggle. Persists to localStorage; initial theme set in layout. */
 export function ThemeToggle() {
@@ -27,10 +28,14 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="w-10 h-10 rounded-full border border-line bg-soft flex items-center justify-center text-lg"
+      className="w-10 h-10 rounded-full border border-line bg-soft flex items-center justify-center text-ink-soft hover:text-brand hover:border-brand transition-colors"
       aria-label="Toggle dark mode"
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {theme === "dark" ? (
+        <IconSun className="w-[18px] h-[18px]" />
+      ) : (
+        <IconMoon className="w-[18px] h-[18px]" />
+      )}
     </button>
   );
 }

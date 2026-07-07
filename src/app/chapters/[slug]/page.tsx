@@ -63,23 +63,28 @@ function ChapterView() {
       {/* Video slot */}
       <section className="mb-6">
         <h2 className="font-bold mb-2">Lesson video</h2>
-        <div className="aspect-video rounded-card bg-soft border border-line flex items-center justify-center text-center">
+        <div className="aspect-video rounded-card overflow-hidden ring-glow bg-soft border border-line flex items-center justify-center text-center">
           {chapter.videoUrl ? (
             <iframe
               src={chapter.videoUrl}
-              className="w-full h-full rounded-card"
+              className="w-full h-full"
               allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               title={`${chapter.title} lesson`}
             />
           ) : (
             <div className="text-ink-faint text-sm px-6">
-              🎬 Video slot
-              <br />
+              Video slot
               {/* {{NEED FROM CLIENT: chapter lesson video URL (YouTube/Vimeo embed or upload)}} */}
-              <span className="text-xs">Client to supply the lesson video.</span>
+              <span className="block text-xs">Client to supply the lesson video.</span>
             </div>
           )}
         </div>
+        {/* {{NEED FROM CLIENT: placeholder lesson videos are public nursing lessons —
+            replace each with the client's own recording before launch.}} */}
+        <p className="text-xs text-ink-faint mt-2">
+          Placeholder lesson — to be replaced with the instructor&apos;s own video.
+        </p>
       </section>
 
       {/* Reading content */}

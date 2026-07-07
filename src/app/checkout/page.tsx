@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useApp } from "@/lib/store";
 import { PLANS, stripeConfigured } from "@/lib/config";
 import type { Tier } from "@/lib/types";
+import { IconCheck } from "@/components/Icons";
 
 export default function CheckoutPage() {
   return (
@@ -93,8 +94,8 @@ function Checkout() {
 
             <ul className="mt-4 space-y-1.5">
               {plan.features.map((f) => (
-                <li key={f} className="text-sm text-ink-soft flex gap-2">
-                  <span className="text-good font-bold">✓</span>
+                <li key={f} className="text-sm text-ink-soft flex gap-2 items-start">
+                  <IconCheck className="w-4 h-4 text-good shrink-0 mt-0.5" />
                   {f}
                 </li>
               ))}
