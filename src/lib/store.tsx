@@ -9,8 +9,13 @@ import {
   useState,
 } from "react";
 import type { Attempt, Progress, ReminderSettings, SessionUser, Tier } from "./types";
-import { CYCLE_DAYS, FREE_QUESTION_LIMIT, supabaseConfigured } from "./config";
+import { CYCLE_DAYS, FREE_ACCESS, FREE_QUESTION_LIMIT, supabaseConfigured } from "./config";
 import { getSupabaseBrowser } from "./supabase/client";
+import {
+  fetchRemoteProgress,
+  insertRemoteAttempt,
+  upsertRemoteProgress,
+} from "./supabase/data";
 
 // ============================================================================
 // StudiaCare data layer.
@@ -128,12 +133,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           const u: SessionUser = {
             id: data.user.id,
             email: data.user.email ?? "",
-            // tier is stored client-side for the draft; real app reads it from
-            // the profiles table / Stripe subscription status.
             tier: (localStorage.getItem(`sc.tier.${data.user.id}`) as Tier) || "free",
           };
           setUser(u);
-          setProgress(loadProgress(u.id));
+          // Load real progress from Postgres; fall back to local cache offline.
+          try {
+            const remote = await fetchRemoteProgress(sb!, u.id);
+            const merged: Progress = {
+              ...defaultProgress(),
+              ...remote,
+              reminders: remote.reminders ?? defaultReminders(),
+            };
+            if (active) {
+              setProgress(merged);
+              saveProgress(u.id, merged);
+            }
+          } catch {
+            if (active) setProgress(loadProgress(u.id));
+          }
         }
       } else {
         try {
@@ -155,9 +172,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const persist = useCallback((uid: string, next: Progress) => {
-    saveProgress(uid, next);
+    saveProgress(uid, next); // local cache (also the offline fallback)
     setProgress(next);
-    // {{NEED FROM CLIENT: when Supabase is live, mirror to the `progress` table here.}}
+    // Mirror to Postgres when Supabase is connected.
+    if (supabaseConfigured()) {
+      const sb = getSupabaseBrowser();
+      if (sb) upsertRemoteProgress(sb, uid, next, new Date().toISOString()).catch(() => {});
+    }
   }, []);
 
   const signUp = useCallback<AppContextValue["signUp"]>(async (email, password) => {
@@ -250,7 +271,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(`sc.tier.${user.id}`, t);
       const next = { ...user, tier: t };
       setUser(next);
-      if (!supabaseConfigured()) {
+      if (supabaseConfigured()) {
+        const sb = getSupabaseBrowser();
+        sb?.from("profiles").update({ tier: t }).eq("id", user.id).then(
+          () => {},
+          () => {}
+        );
+      } else {
         const users = readUsers();
         if (users[user.email]) {
           users[user.email].tier = t;
@@ -305,6 +332,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         attempts: [attempt, ...prev.attempts].slice(0, 50),
         chapterScores,
       };
+      // Persist the attempt row to Postgres (progress row is handled by persist()).
+      if (supabaseConfigured()) {
+        const sb = getSupabaseBrowser();
+        if (sb) insertRemoteAttempt(sb, user.id, attempt).catch(() => {});
+      }
       persist(user.id, next);
     },
     [user, persist]
@@ -320,6 +352,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   const freeRemaining = useMemo(() => {
+    if (FREE_ACCESS) return Infinity; // everything is free — no gate
     if (!user) return FREE_QUESTION_LIMIT;
     if (user.tier !== "free") return Infinity;
     return Math.max(0, FREE_QUESTION_LIMIT - progress.questionsAnswered);

@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { useApp } from "@/lib/store";
+import { FREE_ACCESS } from "@/lib/config";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard" },
@@ -54,9 +55,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
           <div className="flex items-center gap-2.5">
-            {user.tier === "free" && (
+            {!FREE_ACCESS && user.tier === "free" && (
               <span className="hidden sm:inline pill" title="Free questions remaining">
                 {freeRemaining} free left
+              </span>
+            )}
+            {FREE_ACCESS && (
+              <span className="hidden sm:inline pill" title="Everything is free right now">
+                Free · everything unlocked
               </span>
             )}
             <ThemeToggle />

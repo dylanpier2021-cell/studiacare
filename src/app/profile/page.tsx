@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { useApp } from "@/lib/store";
 import { CHAPTERS } from "@/data/chapters";
-import { PLANS } from "@/lib/config";
+import { PLANS, FREE_ACCESS } from "@/lib/config";
 import type { ReminderSettings } from "@/lib/types";
 import { IconFlame, IconCheck } from "@/components/Icons";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -72,33 +72,33 @@ function Profile() {
         </div>
       </div>
 
-      {/* Subscription */}
+      {/* Plan */}
       <div className="card p-6 mb-6">
-        <h2 className="font-bold mb-1">Subscription</h2>
-        <p className="text-sm text-ink-soft mb-4">
-          Current plan: <b className="text-ink">{planName}</b>
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {user?.tier !== "advanced" && (
-            <Link href="/checkout?plan=advanced" className="btn btn-primary btn-sm">
-              Upgrade to Advanced
-            </Link>
-          )}
-          {user?.tier === "free" && (
-            <Link href="/checkout?plan=standard" className="btn btn-ghost btn-sm">
-              Get Standard (first month free)
-            </Link>
-          )}
-          {user?.tier !== "free" && (
-            <button
-              className="btn btn-ghost btn-sm"
-              title="Wired to Stripe billing portal when keys are added"
-            >
-              Manage billing
-            </button>
-          )}
-        </div>
-        {/* {{NEED FROM CLIENT: Stripe billing portal link for real cancel/downgrade.}} */}
+        <h2 className="font-bold mb-1">Your plan</h2>
+        {FREE_ACCESS ? (
+          <p className="text-sm text-ink-soft">
+            You&apos;re on the <b className="text-ink">free</b> plan — everything is unlocked. No
+            card, no limits. Just study.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-ink-soft mb-4">
+              Current plan: <b className="text-ink">{planName}</b>
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {user?.tier !== "advanced" && (
+                <Link href="/checkout?plan=advanced" className="btn btn-primary btn-sm">
+                  Upgrade to Advanced
+                </Link>
+              )}
+              {user?.tier === "free" && (
+                <Link href="/checkout?plan=standard" className="btn btn-ghost btn-sm">
+                  Get Standard (first month free)
+                </Link>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Reminder settings */}

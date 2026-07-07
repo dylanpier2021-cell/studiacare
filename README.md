@@ -27,23 +27,42 @@ click through the entire free-tier flow without any keys. Add Supabase/Stripe ke
 3. Dashboard shows your 7-day study cycle and today's task.
 4. **Build your quiz** (`/quiz/setup`) → pick chapters → timed quiz → results with
    rationales and per-topic feedback.
-5. After 75 questions the **paywall** appears. **Checkout** simulates the upgrade.
-6. Toggle 🌙 / ☀️ any time — the theme persists.
+5. Everything is unlocked — mock exams, reading trainer, unlimited questions.
+6. Toggle light / dark any time — the theme persists.
 
 ---
 
-## Turning on real services
+## It's free right now
 
-Copy `.env.local.example` → `.env.local` and fill in:
+`FREE_ACCESS` in [`src/lib/config.ts`](src/lib/config.ts) is `true`, so anyone can
+sign up and use **everything** — all quizzes, mock exams, flashcards, the reading
+trainer, progress tracking — with no paywall and no card. The whole Stripe/paid-tier
+system is still wired behind that flag; flip it to `false` later to re-enable the
+$9 / $15 tiers and the 75-question free limit.
 
-- **Supabase** (auth + Postgres): create a project, paste the URL + anon key.
-  Then run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor. The app
-  auto-detects the keys and switches from localStorage to real Supabase auth.
-- **Stripe** (subscriptions): paste her test keys and create two recurring prices
-  (Standard $9/mo, Advanced $15/mo). Checkout then creates a real Stripe session
-  with the first-month-free trial and coupon support.
+## Go live (make it real, multi-user, cloud-synced) — ~5 minutes
 
-Everything degrades gracefully: no keys = demo mode, so the draft is always runnable.
+The app runs great in local/demo mode (localStorage) with zero setup. To turn it
+into real production software with real accounts and cloud-synced progress:
+
+1. Create a **Supabase** project (supabase.com → New project).
+2. In the SQL editor, paste + run [`supabase/schema.sql`](supabase/schema.sql)
+   (creates tables, RLS, and the signup trigger).
+3. Add three env vars (locally in `.env.local`, and in the Vercel project settings):
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=...        # Supabase → Settings → API
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+   SUPABASE_SERVICE_ROLE_KEY=...       # server only
+   ```
+4. Redeploy. That's it — the app auto-detects the keys and switches from
+   localStorage to **real Supabase auth + Postgres**: accounts, sessions, and
+   per-user progress/attempts persist to the cloud and sync across devices, with
+   Row Level Security so each user only sees their own data.
+
+Stripe is optional while the app is free. When you re-enable paid tiers, add the
+Stripe keys + price IDs from `.env.local.example`.
+
+Everything degrades gracefully: no keys = demo mode, so it's always runnable.
 
 ---
 
@@ -66,7 +85,8 @@ Everything degrades gracefully: no keys = demo mode, so the draft is always runn
 | Quiz engine: **timed**, one-at-a-time, rationale on every answer | ✅ |
 | Custom quizzes: pick chapters / weak areas, choose length | ✅ |
 | Results: score, per-topic feedback, weak areas, full rationale review | ✅ |
-| Free-tier gate (first 75 questions) → paywall | ✅ |
+| Free access — everything unlocked, no paywall (FREE_ACCESS flag) | ✅ |
+| Real Supabase persistence — auth + progress/attempts sync + RLS | ✅ wired |
 | Hover-to-define terms (hover + tap) | ✅ |
 | Flashcards by chapter (flip) | ✅ |
 | Chapters: list → chapter page (video slot, reading, chapter quiz) | ✅ |

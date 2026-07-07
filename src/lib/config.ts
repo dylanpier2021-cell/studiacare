@@ -5,6 +5,14 @@ import type { Tier } from "./types";
 // page, paywall, checkout, and profile never drift apart.
 // ----------------------------------------------------------------------------
 
+/**
+ * FREE_ACCESS: everything is unlocked and free — anyone can sign up and use the
+ * whole app (all questions, mock exams, reading trainer, no paywall).
+ * Flip to `false` to re-enable the paid tiers + 75-question free limit later;
+ * all the Stripe/paywall infrastructure is still wired behind this flag.
+ */
+export const FREE_ACCESS = true;
+
 /** Free-tier gate: first N questions are free, then the paywall appears. */
 export const FREE_QUESTION_LIMIT = 75;
 
@@ -81,14 +89,14 @@ export function tierRank(t: Tier): number {
   return t === "advanced" ? 2 : t === "standard" ? 1 : 0;
 }
 
-/** Advanced-only features. */
+/** Advanced-only features (unlocked for everyone while FREE_ACCESS is on). */
 export function hasAdvanced(tier: Tier): boolean {
-  return tierRank(tier) >= 2;
+  return FREE_ACCESS || tierRank(tier) >= 2;
 }
 
-/** Paid features (Standard or Advanced). */
+/** Paid features (unlocked for everyone while FREE_ACCESS is on). */
 export function hasPaid(tier: Tier): boolean {
-  return tierRank(tier) >= 1;
+  return FREE_ACCESS || tierRank(tier) >= 1;
 }
 
 /**

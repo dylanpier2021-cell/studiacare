@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Question } from "@/lib/types";
 import { useApp } from "@/lib/store";
 import { chapterTitle } from "@/data/chapters";
+import { FREE_ACCESS } from "@/lib/config";
 import { RichText } from "./Define";
 import { Paywall } from "./Paywall";
 import { IconClock, IconCheck } from "./Icons";
@@ -116,10 +117,9 @@ export function Quiz({ questions, seconds, label, chapter, backHref = "/dashboar
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-6 sm:py-10">
-      {user?.tier === "free" && (
+      {!FREE_ACCESS && user?.tier === "free" && (
         <p className="text-xs text-ink-faint mb-3 text-center">
-          Free preview · {freeRemaining} of your {" "}
-          {/* remaining free questions */}free questions in play
+          Free preview · {freeRemaining} free questions in play
         </p>
       )}
       <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">

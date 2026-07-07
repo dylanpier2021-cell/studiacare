@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { LandingDemo } from "@/components/LandingDemo";
 import { PricingCards } from "@/components/PricingCards";
 import { Reveal } from "@/components/Reveal";
+import { FREE_ACCESS } from "@/lib/config";
 import {
   IconClock,
   IconLayers,
@@ -37,7 +38,7 @@ const HOW = [
 const FAQS = [
   { q: "Why 100 questions when the real exam is 85?", a: "Conditioning. If you can sit 100 timed questions and stay sharp, the real 85 feels familiar instead of exhausting. You walk in already used to it." },
   { q: "Is it really timed like the real exam?", a: "Yes. Every practice session runs on a clock because the state exam does too. The timer stops being scary when you see it every day." },
-  { q: "What do I get for free?", a: "Your first 75 questions with feedback and hover definitions — no credit card. After that, Standard is $9/month and your first month is free." },
+  { q: "What does it cost?", a: "Right now it's completely free — create an account and you get everything: all the timed quizzes, mock exams, flashcards, the reading trainer, and progress tracking. No credit card." },
   { q: "Do I get explanations, or just a score?", a: "Every single question shows a rationale — why the right answer is right and why yours was wrong. You learn while practicing, not after." },
   { q: "Can I study on my phone?", a: "Yes. StudiaCare is built mobile-first and works on your phone, tablet, and computer, in light or dark mode." },
 ];
@@ -273,23 +274,57 @@ export default function Landing() {
       {/* ===================== PRICING ===================== */}
       <section id="pricing" className="py-16 bg-soft">
         <div className="max-w-wrap mx-auto px-5 text-center">
-          <Reveal>
-            <span className="pill">Simple pricing</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold mt-3 mb-2">
-              Start free. Stay because it works.
-            </h2>
-            <p className="text-ink-soft max-w-xl mx-auto">
-              Your first 75 questions cost nothing. Upgrade when you&apos;re ready for the full bank.
-            </p>
-          </Reveal>
-          <Reveal>
-            <PricingCards />
-          </Reveal>
-          <p className="text-xs text-ink-faint mt-6 inline-flex items-center gap-1.5 justify-center">
-            <IconCheck className="w-4 h-4 text-good" />
-            Payments secured by Stripe. Have a coupon? Add it at checkout.
-            {/* {{CONFIRM WITH CLIENT: $21 coupon details — amount, one-time vs recurring}} */}
-          </p>
+          {FREE_ACCESS ? (
+            <Reveal>
+              <span className="pill">Free to join</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold mt-3 mb-2">
+                It&apos;s <span className="text-gradient">completely free</span> right now.
+              </h2>
+              <p className="text-ink-soft max-w-xl mx-auto mb-8">
+                No card, no catch. Create an account and get the whole thing — every timed quiz,
+                mock exams, flashcards, the reading trainer, and your progress tracking.
+              </p>
+              <div className="card ring-glow p-8 sm:p-10 max-w-md mx-auto text-left">
+                <div className="text-center">
+                  <span className="text-5xl font-extrabold text-gradient">$0</span>
+                  <p className="text-ink-faint text-sm mt-1">free while we grow</p>
+                </div>
+                <ul className="space-y-2.5 my-7">
+                  {[
+                    "The full 100-question conditioning bank",
+                    "Full-length timed mock exams",
+                    "Custom quizzes + every chapter",
+                    "Flashcards + the reading trainer",
+                    "Progress tracking, streaks & reminders",
+                  ].map((f) => (
+                    <li key={f} className="text-sm text-ink-soft flex gap-2 items-start">
+                      <IconCheck className="w-4 h-4 text-good shrink-0 mt-0.5" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/signup" className="btn btn-primary w-full">
+                  Create your free account <IconArrow className="w-4 h-4" />
+                </Link>
+              </div>
+            </Reveal>
+          ) : (
+            <>
+              <Reveal>
+                <span className="pill">Simple pricing</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold mt-3 mb-2">
+                  Start free. Stay because it works.
+                </h2>
+                <p className="text-ink-soft max-w-xl mx-auto">
+                  Your first 75 questions cost nothing. Upgrade when you&apos;re ready for the full
+                  bank.
+                </p>
+              </Reveal>
+              <Reveal>
+                <PricingCards />
+              </Reveal>
+            </>
+          )}
         </div>
       </section>
 
