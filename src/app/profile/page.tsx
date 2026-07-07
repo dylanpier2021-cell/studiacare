@@ -8,6 +8,7 @@ import { CHAPTERS } from "@/data/chapters";
 import { PLANS } from "@/lib/config";
 import type { ReminderSettings } from "@/lib/types";
 import { IconFlame, IconCheck } from "@/components/Icons";
+import { ProgressRing } from "@/components/ProgressRing";
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -29,18 +30,27 @@ function Profile() {
         )
       : 0;
   const planName = PLANS.find((p) => p.id === user?.tier)?.name ?? "Free";
+  const readiness = Math.round(
+    CHAPTERS.reduce((s, c) => s + (progress.chapterScores[c.slug] ?? 0), 0) / CHAPTERS.length
+  );
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-8">
-      <h1 className="text-3xl font-extrabold mb-1">Your profile</h1>
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-1">Your profile</h1>
       <p className="text-ink-soft mb-6">{user?.email}</p>
 
-      {/* Snapshot */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <Stat value={String(progress.questionsAnswered)} label="questions" />
-        <Stat value={progress.attempts.length ? `${avg}%` : "—"} label="avg score" />
-        <Stat value={String(progress.streak)} label="day streak" icon={<IconFlame className="w-4 h-4" />} />
-        <Stat value={`${progress.cycleNumber}`} label="cycle #" />
+      {/* Readiness + snapshot */}
+      <div className="card p-6 mb-6 flex flex-col sm:flex-row items-center gap-6">
+        <div className="text-center shrink-0">
+          <ProgressRing value={readiness} size={132} centerLabel="ready" />
+          <p className="text-xs text-ink-faint mt-2">Exam readiness</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 w-full">
+          <Stat value={String(progress.questionsAnswered)} label="questions" />
+          <Stat value={progress.attempts.length ? `${avg}%` : "—"} label="avg score" />
+          <Stat value={String(progress.streak)} label="day streak" icon={<IconFlame className="w-4 h-4" />} />
+          <Stat value={`${progress.cycleNumber}`} label="cycle #" />
+        </div>
       </div>
 
       {/* Per-chapter progress */}

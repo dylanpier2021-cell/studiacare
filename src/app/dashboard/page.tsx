@@ -5,8 +5,9 @@ import { AppShell } from "@/components/AppShell";
 import { useApp } from "@/lib/store";
 import { planForDay } from "@/data/studyPlan";
 import { CYCLE_DAYS } from "@/lib/config";
-import { chapterTitle } from "@/data/chapters";
+import { chapterTitle, CHAPTERS } from "@/data/chapters";
 import { IconFlame, IconLayers, IconSliders, IconCards, IconLibrary, IconArrow } from "@/components/Icons";
+import { ProgressRing } from "@/components/ProgressRing";
 import type { ComponentType, SVGProps } from "react";
 
 export default function DashboardPage() {
@@ -30,6 +31,11 @@ function Dashboard() {
 
   // weakest chapter from best-scores map
   const weakest = Object.entries(progress.chapterScores).sort((a, b) => a[1] - b[1])[0];
+
+  // overall exam readiness = average best score across every chapter
+  const readiness = Math.round(
+    CHAPTERS.reduce((s, c) => s + (progress.chapterScores[c.slug] ?? 0), 0) / CHAPTERS.length
+  );
 
   return (
     <div className="max-w-wrap mx-auto px-5 py-8">
@@ -55,18 +61,32 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Today's plan */}
-      <div className="relative overflow-hidden rounded-card p-6 sm:p-8 text-white bg-gradient-to-br from-brand to-[color:var(--brand2)] ring-glow">
-        <div className="orb orb-c w-52 h-52 -top-10 -right-6 !opacity-25" />
-        <div className="relative">
-          <span className="pill !bg-white/20 !text-white">
-            Today · Day {progress.cycleDay} of your 7-day cycle
-          </span>
-          <h2 className="text-2xl font-extrabold mt-3">{today.focus}</h2>
-          <p className="text-white/85 mt-1 max-w-xl">{today.detail}</p>
-          <Link href={today.href} className="btn bg-white text-brand-dark mt-5 hover:!shadow-none">
-            {today.cta} <IconArrow className="w-4 h-4" />
-          </Link>
+      {/* Today's plan + exam readiness */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2 relative overflow-hidden rounded-card p-6 sm:p-8 text-white bg-gradient-to-br from-brand to-[color:var(--brand2)] ring-glow">
+          <div className="orb orb-c w-52 h-52 -top-10 -right-6 !opacity-25" />
+          <div className="relative">
+            <span className="pill !bg-white/20 !text-white">
+              Today · Day {progress.cycleDay} of your 7-day cycle
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold mt-3">{today.focus}</h2>
+            <p className="text-white/85 mt-1 max-w-xl">{today.detail}</p>
+            <Link href={today.href} className="btn bg-white text-brand-dark mt-5 hover:!shadow-none">
+              {today.cta} <IconArrow className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="card p-6 flex flex-col items-center justify-center text-center">
+          <h3 className="font-bold text-sm text-ink-soft mb-3 self-start">Exam readiness</h3>
+          <ProgressRing value={readiness} size={148} centerLabel="ready" />
+          <p className="text-xs text-ink-faint mt-3">
+            {readiness >= 80
+              ? "You're tracking to pass. Keep the streak."
+              : readiness >= 40
+                ? "Coming along — hit your weak areas next."
+                : "Just getting started. Take today's quiz."}
+          </p>
         </div>
       </div>
 

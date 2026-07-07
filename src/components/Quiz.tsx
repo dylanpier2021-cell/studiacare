@@ -8,6 +8,7 @@ import { chapterTitle } from "@/data/chapters";
 import { RichText } from "./Define";
 import { Paywall } from "./Paywall";
 import { IconClock, IconCheck } from "./Icons";
+import { ProgressRing } from "./ProgressRing";
 
 function fmt(s: number) {
   const m = Math.max(0, s);
@@ -221,14 +222,20 @@ function Results({
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-8 sm:py-12">
-      <div className="text-center">
+      <div className="text-center flex flex-col items-center">
         <span className="pill">{label} · Results</span>
-        <p className="text-ink-soft font-semibold mt-4">Your score</p>
-        <div className="text-5xl font-extrabold text-brand my-1">
-          {score}/{total}
+        <div className="my-5">
+          <ProgressRing
+            value={pct}
+            size={168}
+            stroke={13}
+            centerLabel={pct >= 70 ? "strong" : "keep going"}
+          />
         </div>
-        <p className="text-ink-soft">{pct}% correct</p>
-        <p className="text-ink-soft max-w-md mx-auto mt-3">
+        <p className="font-semibold">
+          {score} of {total} correct
+        </p>
+        <p className="text-ink-soft max-w-md mx-auto mt-2">
           {pct === 100
             ? "Perfect — you'd walk into the real thing ready."
             : pct >= 70

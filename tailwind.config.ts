@@ -24,16 +24,18 @@ const config: Config = {
         line: "var(--line)",
       },
       borderRadius: {
-        card: "14px",
+        card: "20px",
       },
       boxShadow: {
         card: "var(--shadow)",
+        soft: "var(--shadow-soft)",
       },
       maxWidth: {
-        wrap: "1080px",
+        wrap: "1120px",
       },
       fontFamily: {
         sans: [
+          "var(--font-sans)",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
@@ -42,6 +44,7 @@ const config: Config = {
           "Arial",
           "sans-serif",
         ],
+        display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
       },
     },
   },

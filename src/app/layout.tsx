@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/lib/store";
+
+// Body / UI text
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+// Display headings — gives the "designed", high-end feel.
+const display = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "StudiaCare — Pass the State Exam the First Time | Nursing Exam Prep",
@@ -21,7 +36,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem('sc-theme')||'li
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${display.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
