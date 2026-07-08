@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { supabaseConfigured } from "@/lib/config";
+import { supabaseConfigured, SUPABASE_URL, SUPABASE_KEY } from "@/lib/config";
 
 /**
  * Server-side Supabase client (App Router). Returns null when Supabase isn't
@@ -10,8 +10,8 @@ export async function getSupabaseServer() {
   if (!supabaseConfigured()) return null;
   const cookieStore = await cookies();
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL!,
+    SUPABASE_KEY!,
     {
       cookies: {
         getAll() {

@@ -100,13 +100,26 @@ export function hasPaid(tier: Tier): boolean {
 }
 
 /**
+ * Public Supabase URL + client key. Accepts either the new-style publishable
+ * key (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `sb_publishable_...`) or the
+ * legacy anon key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`) — whichever is set.
+ */
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+export const SUPABASE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+/**
  * Is Supabase configured with real credentials? When false the app runs in
  * local demo mode (localStorage) so `npm run dev` works with zero setup.
  */
 export function supabaseConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  return Boolean(url && key && url.startsWith("http") && !url.includes("your-supabase"));
+  return Boolean(
+    SUPABASE_URL &&
+      SUPABASE_KEY &&
+      SUPABASE_URL.startsWith("http") &&
+      !SUPABASE_URL.includes("your-supabase")
+  );
 }
 
 /** Is Stripe configured with a real publishable key? */

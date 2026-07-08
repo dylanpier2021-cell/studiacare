@@ -40,24 +40,30 @@ trainer, progress tracking — with no paywall and no card. The whole Stripe/pai
 system is still wired behind that flag; flip it to `false` later to re-enable the
 $9 / $15 tiers and the 75-question free limit.
 
-## Go live (make it real, multi-user, cloud-synced) — ~5 minutes
+## Go live (make it real, multi-user, cloud-synced)
 
-The app runs great in local/demo mode (localStorage) with zero setup. To turn it
-into real production software with real accounts and cloud-synced progress:
+The app runs great in local/demo mode (localStorage) with zero setup. The Supabase
+project is already connected via env vars. Two remaining dashboard steps make it
+fully real:
 
-1. Create a **Supabase** project (supabase.com → New project).
-2. In the SQL editor, paste + run [`supabase/schema.sql`](supabase/schema.sql)
-   (creates tables, RLS, and the signup trigger).
-3. Add three env vars (locally in `.env.local`, and in the Vercel project settings):
+1. **Run the schema.** Supabase → SQL Editor → paste + run
+   [`supabase/schema.sql`](supabase/schema.sql). This creates the `profiles`,
+   `progress`, `attempts` tables, Row Level Security, and the signup trigger.
+   (Until this runs, cloud sync silently falls back to localStorage.)
+2. **Turn off email confirmation** (recommended, for instant "free to get in"):
+   Supabase → Authentication → Providers → Email → disable **Confirm email**.
+   If left on, new users must click a confirmation link first — the signup screen
+   handles that with a "check your email" message either way.
+3. **Set the env vars in Vercel** (Project → Settings → Environment Variables) so
+   the deployed site isn't in demo mode, then redeploy:
    ```
-   NEXT_PUBLIC_SUPABASE_URL=...        # Supabase → Settings → API
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-   SUPABASE_SERVICE_ROLE_KEY=...       # server only
+   NEXT_PUBLIC_SUPABASE_URL=...                 # Supabase → Settings → API
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...      # sb_publishable_...  (or ANON_KEY)
    ```
-4. Redeploy. That's it — the app auto-detects the keys and switches from
-   localStorage to **real Supabase auth + Postgres**: accounts, sessions, and
-   per-user progress/attempts persist to the cloud and sync across devices, with
-   Row Level Security so each user only sees their own data.
+
+That's it — the app auto-detects the keys and switches to **real Supabase auth +
+Postgres**: accounts, sessions, and per-user progress/attempts persist to the
+cloud and sync across devices, with RLS so each user only sees their own data.
 
 Stripe is optional while the app is free. When you re-enable paid tiers, add the
 Stripe keys + price IDs from `.env.local.example`.

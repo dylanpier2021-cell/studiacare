@@ -12,22 +12,25 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setNotice(null);
     setBusy(true);
-    const { error } = await signUp(email, password);
+    const { error, message } = await signUp(email, password);
     setBusy(false);
     if (error) setError(error);
+    else if (message) setNotice(message); // email confirmation required
     else router.push("/dashboard");
   }
 
   return (
     <AuthShell
       title="Create your free account"
-      subtitle="Your first 75 questions are on us — no card needed."
+      subtitle="It's completely free — everything unlocked, no card needed."
       footer={
         <>
           Already have an account?{" "}
@@ -69,6 +72,11 @@ export default function SignupPage() {
           />
         </div>
         {error && <p className="text-bad text-sm">{error}</p>}
+        {notice && (
+          <p className="text-sm rounded-xl bg-soft border border-line p-3 text-ink-soft">
+            {notice}
+          </p>
+        )}
         <button type="submit" className="btn btn-primary w-full" disabled={busy}>
           {busy ? "Creating…" : "Start free"}
         </button>

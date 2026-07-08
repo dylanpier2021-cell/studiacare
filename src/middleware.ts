@@ -5,7 +5,9 @@ import { createServerClient } from "@supabase/ssr";
 // env vars are set (so the app runs fine in local/demo mode).
 export async function middleware(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key || !url.startsWith("http") || url.includes("your-supabase")) {
     return NextResponse.next();
   }

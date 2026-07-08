@@ -105,7 +105,7 @@ interface AppContextValue {
   demoMode: boolean;
   /** Questions still free for this user (Infinity for paid users). */
   freeRemaining: number;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: string; message?: string }>;
@@ -121,6 +121,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState<Progress>(defaultProgress());
   const [loading, setLoading] = useState(true);
   const demoMode = !supabaseConfigured();
+
+  // Load a signed-in user's progress from Postgres, falling back to local cache.
+  const hydrateProgress = useCallback(async (uid: string) => {
+    const sb = getSupabaseBrowser();
+    if (!sb) {
+      setProgress(loadProgress(uid));
+      return;
+    }
+    try {
+      const remote = await fetchRemoteProgress(sb, uid);
+      const merged: Progress = {
+        ...defaultProgress(),
+        ...remote,
+        reminders: remote.reminders ?? defaultReminders(),
+      };
+      setProgress(merged);
+      saveProgress(uid, merged);
+    } catch {
+      setProgress(loadProgress(uid));
+    }
+  }, []);
 
   // Hydrate session on mount.
   useEffect(() => {
@@ -190,10 +211,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const sb = getSupabaseBrowser();
       const { data, error } = await sb!.auth.signUp({ email, password });
       if (error) return { error: error.message };
+      // If email confirmation is ON in Supabase, there's no session yet.
+      if (!data.session) {
+        return { message: "Almost there — check your email to confirm your account, then log in." };
+      }
       if (data.user) {
         const u: SessionUser = { id: data.user.id, email, tier: "free" };
         setUser(u);
-        setProgress(loadProgress(u.id));
+        await hydrateProgress(u.id);
       }
       return {};
     }
@@ -222,7 +247,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         tier: (localStorage.getItem(`sc.tier.${data.user.id}`) as Tier) || "free",
       };
       setUser(u);
-      setProgress(loadProgress(u.id));
+      await hydrateProgress(u.id);
       return {};
     }
 
